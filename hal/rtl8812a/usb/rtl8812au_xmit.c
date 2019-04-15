@@ -1130,7 +1130,7 @@ s32 rtl8812au_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 	ptxdesc->txdw3 |= cpu_to_le32((8 << 28)); /* set bit3 to 1. Suugested by TimChen. 2009.12.29. */
 
 
-	rtl8812eu_cal_txdesc_chksum(ptxdesc);
+	rtl8812a_cal_txdesc_chksum(ptxdesc);
 	/* ----- end of fill tx desc ----- */
 
 	/*  */
