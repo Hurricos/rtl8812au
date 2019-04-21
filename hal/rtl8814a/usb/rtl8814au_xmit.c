@@ -41,7 +41,7 @@ void	rtl8814au_free_xmit_priv(_adapter *padapter)
 
 static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz ,u8 bagg_pkt)
 {	
-      int	pull=0;
+	int	pull = 0;
 	uint	qsel;
 	u8 data_rate,pwr_status,offset;
 	_adapter			*padapter = pxmitframe->padapter;
@@ -138,9 +138,11 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz ,u8 bag
                 } else {
                         SET_TX_DESC_DATA_SHORT_8814A(ptxdesc, 0);
                 }
+
                 SET_TX_DESC_USE_RATE_8814A(ptxdesc, 1);
                 SET_TX_DESC_TX_RATE_8814A(ptxdesc, MRateToHwRate(pattrib->rate));
                 if (pattrib->ldpc) {
+
                         SET_TX_DESC_DATA_LDPC_8814A(ptxdesc, 1);
                 } else {
                         SET_TX_DESC_DATA_LDPC_8814A(ptxdesc, 0);
@@ -148,16 +150,16 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz ,u8 bag
                 SET_TX_DESC_DATA_STBC_8814A(ptxdesc, pattrib->stbc & 3);
                 SET_TX_DESC_DATA_BW_8814A(ptxdesc, pattrib->bwmode); // 0 - 20 MHz, 1 - 40 MHz, 2 - 80 MHz
         	}
-
-		else if ((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG) {
+	
+	if ((pxmitframe->frame_tag & 0x0f) == DATA_FRAMETAG) {
 		//RTW_INFO("pxmitframe->frame_tag == DATA_FRAMETAG\n");
 
 		rtl8814a_fill_txdesc_sectype(pattrib, ptxdesc);
 
 		//offset 20
-		}
+
 #ifdef CONFIG_USB_TX_AGGREGATION
-		if (pxmitframe->agg_num > 1){
+		if (pxmitframe->agg_num > 1) {
 			//RTW_INFO("%s agg_num:%d\n",__FUNCTION__,pxmitframe->agg_num );
 			SET_TX_DESC_USB_TXAGG_NUM_8814A(ptxdesc, pxmitframe->agg_num);
 		}
@@ -247,7 +249,9 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz ,u8 bag
 			SET_TX_DESC_TX_RATE_8814A(ptxdesc, MRateToHwRate(pmlmeext->tx_rate));
 		}
 
-		if ((pxmitframe->frame_tag&0x0f)== MGNT_FRAMETAG) {
+		}
+		else if((pxmitframe->frame_tag & 0x0f) == MGNT_FRAMETAG) 
+		{
 		//RTW_INFO("pxmitframe->frame_tag == MGNT_FRAMETAG\n");
 
 		SET_TX_DESC_USE_RATE_8814A(ptxdesc, 1);
@@ -306,12 +310,12 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz ,u8 bag
 		}
 #endif //CONFIG_XMIT_ACK
 	}
-	else if((pxmitframe->frame_tag&0x0f) == TXAGG_FRAMETAG)
+	else if((pxmitframe->frame_tag & 0x0f) == TXAGG_FRAMETAG)
 	{
 		RTW_INFO("pxmitframe->frame_tag == TXAGG_FRAMETAG\n");
 	}
 #ifdef CONFIG_MP_INCLUDED
-	else if(((pxmitframe->frame_tag&0x0f) == MP_FRAMETAG) &&
+	else if(((pxmitframe->frame_tag & 0x0f) == MP_FRAMETAG) &&
 		(padapter->registrypriv.mp_mode == 1))
 	{
 		fill_txdesc_for_mp(padapter, ptxdesc);
@@ -337,7 +341,6 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz ,u8 bag
 	return pull;
 }
 
-
 #ifdef CONFIG_XMIT_THREAD_MODE
 /*
  * Description
@@ -353,7 +356,6 @@ s32 rtl8814au_xmit_buf_handler(PADAPTER padapter)
 	struct xmit_priv *pxmitpriv;
 	struct xmit_buf *pxmitbuf;
 	s32 ret;
-
 
 	phal = GET_HAL_DATA(padapter);
 	pxmitpriv = &padapter->xmitpriv;
@@ -406,7 +408,7 @@ static s32 rtw_dump_xframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	s32 ret = _SUCCESS;
 	s32 inner_ret = _SUCCESS;
-	int t, sz, w_sz, pull=0;
+	int t, sz, w_sz, pull = 0;
 	u8 *mem_addr;
 	u32 ff_hwaddr;
 	struct xmit_buf *pxmitbuf = pxmitframe->pxmitbuf;
@@ -850,7 +852,7 @@ s32 rtl8814au_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 
 			pxmitbuf->priv_data = pxmitframe;
 
-			if((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG)
+			if((pxmitframe->frame_tag & 0x0f) == DATA_FRAMETAG)
 			{
 				if(pxmitframe->attrib.priority<=15)//TID0~15
 				{
@@ -1115,7 +1117,7 @@ s32 rtl8814au_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 	
 	//translate DMA FIFO addr to pipehandle
 	//pipe = ffaddr2pipehdl(pdvobj, MGT_QUEUE_INX);
-	pipe = usb_sndbulkpipe(pdvobj->pusbdev, pHalData->Queue2EPNum[(u8)MGT_QUEUE_INX]&0x0f);
+	pipe = usb_sndbulkpipe(pdvobj->pusbdev, pHalData->Queue2EPNum[(u8)MGT_QUEUE_INX] & 0x0f);
 	
 	usb_fill_bulk_urb(urb, pdvobj->pusbdev, pipe,
 			  pxmit_skb->data, pxmit_skb->len, rtl8192cu_hostap_mgnt_xmit_cb, pxmit_skb);
@@ -1140,4 +1142,3 @@ _exit:
 
 }
 #endif
-
